@@ -1,4 +1,4 @@
-# ✦ SnapNote – Highlight & Save Chrome Extension
+# SnapNote – Highlight & Save Chrome Extension
 
 SnapNote lets you capture text from any webpage as saved notes with a single click. Highlight text, choose a color, and save it instantly — then manage notes from the popup panel.
 
