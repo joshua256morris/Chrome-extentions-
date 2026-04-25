@@ -1,0 +1,154 @@
+/* SnapNote Content Styles */
+
+:root {
+  --sn-bg: #ffffff;
+  --sn-border: #e8e8f0;
+  --sn-text: #000000;
+  --sn-accent: #cee829;
+  --sn-accent2: hsl(73, 80%, 69%);
+  --sn-feedback-bg: linear-gradient(135deg, #d8ff7d 0%, hsl(61, 80%, 69%) 100%);
+  --sn-shadow: rgba(0,0,0,0.13);
+  --sn-shadow-light: rgba(0,0,0,0.07);
+  --sn-feedback-shadow: rgba(173,216,230,0.35);
+}
+
+.dark-theme {
+  --sn-bg: #1a1a1a;
+  --sn-border: #333333;
+  --sn-text: #ffffff;
+  --sn-accent: #d8ff7d;
+  --sn-accent2: hsl(61, 80%, 69%);
+  --sn-feedback-bg: linear-gradient(135deg, #a3e635 0%, hsl(80, 60%, 50%) 100%);
+  --sn-shadow: rgba(255,255,255,0.1);
+  --sn-shadow-light: rgba(255,255,255,0.05);
+  --sn-feedback-shadow: rgba(0,0,0,0.5);
+}
+
+#snapnote-tooltip {
+  position: absolute;
+  z-index: 2147483647;
+  display: none;
+  opacity: 0;
+  transform: translateY(6px) scale(0.97);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: auto;
+}
+
+#snapnote-tooltip.sn-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.sn-tooltip-inner {
+  background: var(--sn-bg);
+  border: 1px solid var(--sn-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 32px var(--sn-shadow), 0 2px 8px var(--sn-shadow-light);
+  width: 260px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sn-logo {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sn-accent);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  display: none;
+}
+
+.sn-logo-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sn-colors {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+}
+
+.sn-color-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  padding: 0;
+  outline: none;
+}
+
+.sn-color-btn:hover {
+  transform: scale(1.2);
+}
+
+.sn-color-btn.active {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
+}
+
+.sn-save-btn {
+  background: #21262d;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: opacity 0.13s, transform 0.13s, box-shadow 0.13s;
+  letter-spacing: 0.01em;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+}
+
+.sn-save-btn:hover {
+  opacity: 0.95;
+  transform: scale(1.03);
+}
+
+.sn-save-btn:active {
+  transform: scale(0.97);
+}
+
+/* Saved feedback toast */
+#sn-feedback {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 2147483647;
+  background: var(--sn-feedback-bg);
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px var(--sn-feedback-shadow);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  letter-spacing: 0.01em;
+}
+
+#sn-feedback.sn-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Highlight marks */
+.snapnote-highlight {
+  cursor: pointer;
+  border-radius: 2px;
+}

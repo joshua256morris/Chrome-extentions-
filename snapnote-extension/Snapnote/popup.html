@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SnapNote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ─── Reset & Base ─────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c-bg:       #FFFBEB;
+    --c-surface:  #ffffff;
+    --c-border:   #FDE68A;
+    --c-accent:   #F59E0B;
+    --c-accent2:  #FBBF24;
+    --c-text:     #1a1830;
+    --c-muted:    #D97706;
+    --c-tag-bg:   #FEF3C7;
+    --c-tag-text: #F59E0B;
+    --c-danger:   #f43f5e;
+    --r-card:     12px;
+    --shadow-sm:  0 1px 4px rgba(245,158,11,0.07);
+    --shadow-md:  0 4px 20px rgba(245,158,11,0.12);
+  }
+
+  body.dark-theme {
+    --c-bg:       #1a1a1a;
+    --c-surface:  #2a2a2a;
+    --c-border:   #444444;
+    --c-accent:   #FBBF24;
+    --c-accent2:  #F59E0B;
+    --c-text:     #ffffff;
+    --c-muted:    #cccccc;
+    --c-tag-bg:   #333333;
+    --c-tag-text: #FBBF24;
+    --c-danger:   #ff6b6b;
+    --shadow-sm:  0 1px 4px rgba(255,255,255,0.1);
+    --shadow-md:  0 4px 20px rgba(255,255,255,0.15);
+  }
+
+  html { width: 380px; height: 560px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    width: 380px;
+    height: 560px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Header ───────────────────────────── */
+  .header {
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    padding: 16px 18px 12px;
+    flex-shrink: 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .logo-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .logo-icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  .logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--c-text);
+  }
+
+  .logo-text span { color: var(--c-accent); }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    width: 30px; height: 30px;
+    border: 1px solid var(--c-border);
+    background: var(--c-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: background 0.12s, border-color 0.12s;
+    color: var(--c-muted);
+  }
+
+  .export-format-select {
+    border: 1px solid var(--c-border);
+    background: var(--c-bg);
+    color: var(--c-text);
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    min-width: 80px;
+    margin-right: 6px;
+  }
+
+  body.dark-theme .export-format-select {
+    background: #2a2a2a;
+    color: #ffffff;
+    border-color: #444;
+  }
+
+  .icon-btn:hover { background: var(--c-border); border-color: #d8d4fa; color: var(--c-accent); }
+
+  /* Search */
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 13px; color: var(--c-muted); pointer-events: none;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    border: 1px solid var(--c-border);
+    background: var(--c-bg);
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--c-text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  #searchInput:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+    background: var(--c-surface);
+  }
+
+  #searchInput::placeholder { color: var(--c-muted); }
+
+  /* ─── Tabs ──────────────────────────────── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 10px 18px 0;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    flex-shrink: 0;
+  }
+
+  .tab-btn {
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--c-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    border-radius: 6px 6px 0 0;
+    transition: color 0.13s;
+  }
+
+  .tab-btn.active {
+    color: var(--c-accent);
+    border-bottom-color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--c-text); }
+
+  /* ─── Notes list ────────────────────────── */
+  .notes-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .notes-scroll::-webkit-scrollbar { width: 4px; }
+  .notes-scroll::-webkit-scrollbar-track { background: transparent; }
+  .notes-scroll::-webkit-scrollbar-thumb { background: #d8d4fa; border-radius: 99px; }
+
+  /* ─── Empty state ───────────────────────── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .empty-icon { font-size: 40px; line-height: 1; }
+
+  .empty-logo {
+    width: 50px;
+    height: 50px;
+    display: block;
+    border-radius: 12px;
+    object-fit: contain;
+  }
+
+  .empty-title {
+    font-size: 15px; font-weight: 600;
+    color: var(--c-text);
+  }
+
+  .empty-sub {
+    font-size: 12.5px; color: var(--c-muted); line-height: 1.5;
+    max-width: 220px;
+  }
+
+  /* ─── Note card ─────────────────────────── */
+  .note-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-card);
+    padding: 12px 13px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.15s, transform 0.12s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .note-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+  .note-color-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 12px 0 0 12px;
+  }
+
+  .note-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 8px; margin-bottom: 6px;
+  }
+
+  .note-source {
+    display: flex; align-items: center; gap: 5px;
+    flex: 1; min-width: 0;
+  }
+
+  .note-favicon {
+    width: 13px; height: 13px; border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .note-page-title {
+    font-size: 11px; font-weight: 500;
+    color: var(--c-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .note-actions {
+    display: flex; gap: 3px; flex-shrink: 0;
+    opacity: 0; transition: opacity 0.13s;
+  }
+
+  .note-card:hover .note-actions { opacity: 1; }
+
+  .note-action-btn {
+    width: 22px; height: 22px;
+    background: transparent; border: none;
+    border-radius: 5px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--c-muted);
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .note-action-btn:hover { background: var(--c-bg); }
+  .note-action-btn.delete:hover { color: var(--c-danger); background: #fff0f3; }
+  .note-action-btn.copy:hover { color: var(--c-accent); }
+
+  .note-text {
+    font-size: 13px; line-height: 1.6;
+    color: var(--c-text);
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .note-card.expanded .note-text {
+    -webkit-line-clamp: unset;
+    display: block;
+  }
+
+  .note-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .note-tag-input {
+    flex: 1; min-width: 0;
+    background: var(--c-tag-bg);
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: 3px 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px; color: var(--c-tag-text);
+    outline: none;
+    transition: border-color 0.12s;
+    max-width: 120px;
+  }
+
+  .note-tag-input::placeholder { color: #b3aedf; }
+  .note-tag-input:focus { border-color: var(--c-accent); }
+
+  .note-date {
+    font-size: 10.5px; color: var(--c-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .note-link {
+    font-size: 10.5px;
+    color: var(--c-accent);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+    max-width: 120px;
+    display: inline-block;
+    font-weight: 500;
+    opacity: 0.85;
+    transition: opacity 0.12s;
+  }
+
+  .note-link:hover { opacity: 1; text-decoration: underline; }
+
+  /* ─── Add note section ──────────────────── */
+  .add-note-panel {
+    padding: 14px 16px;
+    background: var(--c-surface);
+    border-top: 1px solid var(--c-border);
+    flex-shrink: 0;
+  }
+
+  .add-note-row {
+    display: flex; gap: 8px; align-items: flex-end;
+  }
+
+  #manualNoteInput {
+    flex: 1;
+    border: 1px solid var(--c-border);
+    border-radius: 9px;
+    padding: 9px 11px;
+    font-family: inherit; font-size: 12.5px;
+    resize: none; outline: none;
+    background: var(--c-bg); color: var(--c-text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    min-height: 52px; max-height: 100px;
+    line-height: 1.5;
+  }
+
+  #manualNoteInput:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+    background: var(--c-surface);
+  }
+
+  #manualNoteInput::placeholder { color: var(--c-muted); }
+
+  .add-note-btn {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--c-accent), var(--c-accent2));
+    border: none; border-radius: 9px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff;
+    transition: opacity 0.12s, transform 0.12s;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+
+  .add-note-btn:hover { opacity: 0.88; transform: scale(1.05); }
+  .add-note-btn:active { transform: scale(0.95); }
+
+  /* ─── Stats bar ─────────────────────────── */
+  .stats-bar {
+    padding: 6px 18px;
+    background: var(--c-surface);
+    border-top: 1px solid var(--c-border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .stats-text {
+    font-size: 11px; color: var(--c-muted); font-weight: 500;
+  }
+
+  .stats-text strong { color: var(--c-accent); }
+
+  .clear-all-btn {
+    font-size: 11px; color: var(--c-danger);
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-weight: 500; padding: 2px 5px; border-radius: 4px;
+    transition: background 0.12s;
+  }
+
+  .clear-all-btn:hover { background: #fff0f3; }
+
+  /* ─── Copied feedback ───────────────────── */
+  .copy-flash {
+    position: fixed;
+    bottom: 14px; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--c-text); color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 7px 16px; border-radius: 8px;
+    opacity: 0; transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none; z-index: 99;
+  }
+
+  .copy-flash.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ─── Color dots for card accent ───────── */
+  .color-yellow { background: #F9A825; }
+  .color-green  { background: #388E3C; }
+  .color-blue   { background: #1565C0; }
+  .color-pink   { background: #C2185B; }
+  .color-purple { background: #6A1B9A; }
+
+  /* Scrollbar for notes */
+  .notes-scroll::-webkit-scrollbar-track { background: transparent; }
+  .notes-scroll::-webkit-scrollbar-thumb { background: #d8d4fa; border-radius: 99px; }
+
+  /* ─── Note Tooltip ──────────────────────── */
+  .note-tooltip {
+    position: fixed;
+    z-index: 1000;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r-card);
+    padding: 12px;
+    width: min(280px, calc(100% - 32px));
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--c-text);
+    backdrop-filter: blur(6px);
+  }
+
+  .note-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ─── Note Dialog Overlay ───────────────── */
+  .note-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 12px;
+  }
+
+  .note-dialog-overlay.show {
+    display: flex;
+  }
+
+  .note-dialog {
+    width: min(360px, 100%);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+
+  .note-dialog-header {
+    padding: 14px 16px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .note-dialog-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-text);
+  }
+
+  .note-dialog-close {
+    border: none;
+    background: transparent;
+    color: var(--c-muted);
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .note-dialog-body {
+    padding: 16px;
+    color: var(--c-text);
+    font-size: 13px;
+    line-height: 1.6;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .note-dialog-footer {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--c-muted);
+    font-size: 12px;
+  }
+
+  .note-dialog-footer a {
+    color: var(--c-accent);
+    text-decoration: none;
+  }
+
+  .note-dialog-tag {
+    background: var(--c-tag-bg);
+    color: var(--c-tag-text);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  /* ─── Footer / Copyright ────────────────── */
+  .footer {
+    padding: 8px 18px;
+    background: var(--c-surface);
+    border-top: 1px solid var(--c-border);
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .footer-text {
+    font-size: 10px;
+    color: var(--c-muted);
+    font-weight: 400;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon"><img src="icons/icon16.svg" alt="SnapNote" /></div>
+      <div class="logo-text">Snap<span>Note</span></div>
+    </div>
+    <div class="header-actions">
+      <select id="exportFormat" class="export-format-select" title="Select export format">
+        <option value="doc">DOC</option>
+        <option value="txt">TXT</option>
+      </select>
+      <button class="icon-btn" id="exportBtn" title="Export notes">⬇</button>
+      <button class="icon-btn" id="sortBtn" title="Sort notes">⇅</button>
+      <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search notes…" autocomplete="off" spellcheck="false" />
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="all">All <span class="count-badge" id="totalCount">0</span></button>
+  <button class="tab-btn" data-tab="page">This Page</button>
+  <button class="tab-btn" data-tab="tagged">Tagged</button>
+</div>
+
+<!-- Notes list -->
+<div class="notes-scroll" id="notesList"></div>
+
+<!-- Manual add -->
+<div class="add-note-panel">
+  <div class="add-note-row">
+    <textarea id="manualNoteInput" placeholder="Jot a quick note…" rows="2"></textarea>
+    <button class="add-note-btn" id="addNoteBtn" title="Add note">+</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-bar">
+  <span class="stats-text" id="statsText">0 notes saved</span>
+  <button class="clear-all-btn" id="clearAllBtn">Clear all</button>
+</div>
+
+<!-- Copy flash -->
+<div class="copy-flash" id="copyFlash">Copied!</div>
+
+<!-- Tooltip for note preview -->
+<div id="noteTooltip" class="note-tooltip">
+  <div class="note-tooltip-content"></div>
+</div>
+
+<!-- Dialog for full note details -->
+<div id="noteDialogOverlay" class="note-dialog-overlay" aria-hidden="true">
+  <div class="note-dialog" role="dialog" aria-modal="true">
+    <div class="note-dialog-header">
+      <div class="note-dialog-title">Note details</div>
+      <button class="note-dialog-close" id="noteDialogClose" aria-label="Close">✕</button>
+    </div>
+    <div class="note-dialog-body" id="noteDialogBody"></div>
+    <div class="note-dialog-footer" id="noteDialogFooter"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-text">© Saint_gallery</div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
